@@ -191,6 +191,15 @@ h2{font-size:var(--text-lg);font-weight:700;letter-spacing:-0.02em}
       <div class="code-val" id="txCode">——</div>
       <button class="copy-btn" id="copyBtn">Copy</button>
     </div>
+    <div id="qrWrap" style="background:#fff;padding:var(--space-4);border-radius:var(--radius-lg);display:flex;flex-direction:column;align-items:center;gap:var(--space-2);">
+      <div id="qrCanvas" style="line-height:0;"></div>
+      <div style="font-size:var(--text-xs);color:#000;text-align:center;line-height:1.4;">
+        Scan with phone camera to auto-fill code & API key.<br>
+        <label style="display:inline-flex;align-items:center;gap:6px;margin-top:6px;color:#444;cursor:pointer;">
+          <input type="checkbox" id="qrIncludeKey" checked> Include API key in QR
+        </label>
+      </div>
+    </div>
     <div class="status-panel">
       <div class="status-row"><div class="sdot spin" id="txDotAbly"></div><div class="slabel">Ably connection</div><div class="sval" id="txLblAbly">Connecting…</div></div>
       <div class="status-row"><div class="sdot" id="txDotViewer"></div><div class="slabel">Viewer connected</div><div class="sval" id="txLblViewer">Waiting…</div></div>
@@ -274,6 +283,7 @@ h2{font-size:var(--text-lg);font-weight:700;letter-spacing:-0.02em}
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <script>
 // ── Theme ────────────────────────────────────────────────────────────────────
 (function(){
@@ -299,6 +309,30 @@ try{
   const saved=localStorage.getItem('sb_ably_key');
   if(saved){ABLY_KEY=saved;keyStatus.style.color='var(--green)';keyStatus.textContent='✓ Key loaded from this device.';rememberCheck.checked=true;}
 }catch(e){}
+
+// Auto-fill from URL hash (QR code path): #k=<key>&c=<code>
+(function autoloadFromHash(){
+  try{
+    const h=location.hash.replace(/^#/,'');
+    if(!h)return;
+    const params=new URLSearchParams(h);
+    const k=params.get('k');
+    const c=params.get('c');
+    if(k && /^[^.:\s]+\.[^:\s]+:.+$/.test(k)){
+      ABLY_KEY=k;
+      try{localStorage.setItem('sb_ably_key',k);}catch(e){}
+      keyStatus.style.color='var(--green)';
+      keyStatus.textContent='✓ Key auto-loaded from QR scan.';
+      rememberCheck.checked=true;
+    }
+    if(c && /^\d{6}$/.test(c)){
+      // Pre-fill receiver code & jump to receiver flow
+      window.__autoJoinCode=c;
+    }
+    // Strip hash so key isn't visible in address bar
+    history.replaceState(null,'',location.pathname+location.search);
+  }catch(e){console.warn('hash autoload failed',e);}
+})();
 
 document.getElementById('saveKeyBtn').addEventListener('click',()=>{
   const v=keyInput.value.trim();
@@ -375,12 +409,42 @@ document.getElementById('btnSender').addEventListener('click',()=>{
   document.getElementById('txAlert').classList.add('hidden');
   document.getElementById('startBtn').classList.add('hidden');
   show('sSenderSetup');
+  renderQR();
   loadAbly(initSender);
 });
+
+document.getElementById('qrIncludeKey').addEventListener('change',renderQR);
+
+function renderQR(){
+  const wrap=document.getElementById('qrCanvas');
+  if(!wrap||typeof qrcode==='undefined')return;
+  const includeKey=document.getElementById('qrIncludeKey').checked;
+  const base=location.origin+location.pathname;
+  const params=new URLSearchParams();
+  params.set('c',roomCode);
+  if(includeKey && ABLY_KEY) params.set('k',ABLY_KEY);
+  const url=base+'#'+params.toString();
+  // Type 0 = auto, error correction 'L' = lowest (max capacity ~2900 chars)
+  const qr=qrcode(0,'L');
+  qr.addData(url);
+  qr.make();
+  wrap.innerHTML=qr.createSvgTag({cellSize:5,margin:2,scalable:true});
+  const svg=wrap.querySelector('svg');
+  if(svg){svg.style.width='200px';svg.style.height='200px';}
+}
 
 document.getElementById('btnReceiver').addEventListener('click',()=>{
   if(!requireKey())return;
   show('sReceiverSetup');
+});
+
+// Auto-join after page load if QR provided a code
+window.addEventListener('load',()=>{
+  if(window.__autoJoinCode && ABLY_KEY){
+    document.getElementById('rxCodeInput').value=window.__autoJoinCode;
+    show('sReceiverSetup');
+    setTimeout(()=>{document.getElementById('joinBtn').click();},250);
+  }
 });
 
 document.getElementById('backSender').addEventListener('click',()=>{cleanup();show('sMode');});
