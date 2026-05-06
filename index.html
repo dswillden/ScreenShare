@@ -417,14 +417,21 @@ document.getElementById('qrIncludeKey').addEventListener('change',renderQR);
 
 function renderQR(){
   const wrap=document.getElementById('qrCanvas');
+  const qrWrap=document.getElementById('qrWrap');
   if(!wrap||typeof qrcode==='undefined')return;
+
+  // If running as a local file, QR can't link to the phone — show a note instead
+  if(location.protocol==='file:'){
+    qrWrap.innerHTML='<p style="font-size:var(--text-xs);color:#555;text-align:center;padding:var(--space-2);">QR not available when opened as a local file.<br>Phone must open the same HTML file directly.</p>';
+    return;
+  }
+
   const includeKey=document.getElementById('qrIncludeKey').checked;
   const base=location.origin+location.pathname;
   const params=new URLSearchParams();
   params.set('c',roomCode);
   if(includeKey && ABLY_KEY) params.set('k',ABLY_KEY);
   const url=base+'#'+params.toString();
-  // Type 0 = auto, error correction 'L' = lowest (max capacity ~2900 chars)
   const qr=qrcode(0,'L');
   qr.addData(url);
   qr.make();
