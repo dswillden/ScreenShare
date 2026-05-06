@@ -6,12 +6,12 @@
 <title>ScreenBridge Live</title>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --text-xs: clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
-  --text-sm: clamp(0.875rem,0.8rem + 0.35vw,1rem);
-  --text-base: clamp(1rem,0.95rem + 0.25vw,1.125rem);
-  --text-lg: clamp(1.125rem,1rem + 0.75vw,1.5rem);
-  --text-xl: clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+:root{
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
+  --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
   --space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;
   --space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;
   --radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-full:9999px;
@@ -33,505 +33,555 @@
 html{-webkit-font-smoothing:antialiased}
 body{min-height:100dvh;font-family:'Satoshi','Inter',sans-serif;font-size:var(--text-base);color:var(--text);background:var(--bg);transition:background var(--transition),color var(--transition)}
 button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
-img,canvas,video{display:block;max-width:100%}
+canvas{display:block;max-width:100%}
 
 header{display:flex;align-items:center;justify-content:space-between;padding:var(--space-4) var(--space-6);background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
 .logo{display:flex;align-items:center;gap:var(--space-3);font-weight:700;font-size:var(--text-lg);letter-spacing:-0.02em}
 .logo svg{color:var(--accent)}
-.header-right{display:flex;align-items:center;gap:var(--space-3)}
 .theme-toggle{width:36px;height:36px;border-radius:var(--radius-md);background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:all var(--transition)}
 .theme-toggle:hover{color:var(--text)}
 
-.mode-screen{max-width:480px;margin:var(--space-12) auto;padding:var(--space-8) var(--space-6);display:flex;flex-direction:column;align-items:center;gap:var(--space-6);text-align:center}
-.mode-screen h1{font-size:var(--text-xl);font-weight:700;letter-spacing:-0.03em}
-.mode-screen p{font-size:var(--text-sm);color:var(--text-muted);max-width:38ch}
-.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4);width:100%}
+.screen{min-height:calc(100dvh - 65px)}
+.center-wrap{max-width:460px;margin:0 auto;padding:var(--space-10) var(--space-6);display:flex;flex-direction:column;gap:var(--space-5)}
+h1{font-size:var(--text-xl);font-weight:700;letter-spacing:-0.03em}
+h2{font-size:var(--text-lg);font-weight:700;letter-spacing:-0.02em}
+.sub{font-size:var(--text-sm);color:var(--text-muted)}
+
+.mode-cards{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-4)}
 .mode-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-xl);padding:var(--space-6) var(--space-4);display:flex;flex-direction:column;align-items:center;gap:var(--space-3);cursor:pointer;transition:all var(--transition);text-align:center}
-.mode-card:hover{border-color:var(--accent);background:var(--surface-2);transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
-.mode-card .icon{width:52px;height:52px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center}
-.mode-card.sender .icon{background:rgba(79,142,247,0.15);color:var(--accent)}
-.mode-card.receiver .icon{background:rgba(72,187,120,0.15);color:var(--green)}
-.mode-card h3{font-weight:700;font-size:var(--text-base)}
+.mode-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
+.mode-icon{width:52px;height:52px;border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center}
+.mode-card h3{font-weight:700}
 .mode-card p{font-size:var(--text-xs);color:var(--text-muted);line-height:1.5}
 
-.room-screen{max-width:440px;margin:var(--space-10) auto;padding:var(--space-8) var(--space-6);display:flex;flex-direction:column;gap:var(--space-5)}
-.room-screen h2{font-size:var(--text-lg);font-weight:700;letter-spacing:-0.02em}
-.room-screen p{font-size:var(--text-sm);color:var(--text-muted)}
-.code-display{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-5);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
-.code-value{font-size:var(--text-xl);font-weight:700;letter-spacing:0.15em;font-variant-numeric:tabular-nums;color:var(--accent)}
+.code-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-5);display:flex;align-items:center;justify-content:space-between;gap:var(--space-4)}
+.code-val{font-size:var(--text-xl);font-weight:700;letter-spacing:0.15em;font-variant-numeric:tabular-nums;color:var(--accent)}
 .copy-btn{padding:var(--space-2) var(--space-4);background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-md);font-size:var(--text-xs);font-weight:600;transition:all var(--transition)}
 .copy-btn:hover{background:var(--border)}
-.input-row{display:flex;gap:var(--space-2)}
-.code-input{flex:1;padding:var(--space-3) var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:inherit;font-size:var(--text-base);letter-spacing:0.1em;text-transform:uppercase;transition:border-color var(--transition)}
-.code-input:focus{outline:none;border-color:var(--accent)}
-.code-input::placeholder{letter-spacing:normal;text-transform:none;color:var(--text-faint)}
 
-.btn-primary{padding:var(--space-3) var(--space-5);background:var(--accent);color:white;border-radius:var(--radius-md);font-weight:600;font-size:var(--text-sm);display:flex;align-items:center;justify-content:center;gap:var(--space-2);transition:all var(--transition)}
+.input-row{display:flex;gap:var(--space-2)}
+.code-input{flex:1;padding:var(--space-3) var(--space-4);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);color:var(--text);font:inherit;font-size:var(--text-lg);letter-spacing:0.1em;transition:border-color var(--transition);text-align:center}
+.code-input:focus{outline:none;border-color:var(--accent)}
+.code-input::placeholder{letter-spacing:normal;font-size:var(--text-base);color:var(--text-faint)}
+
+.status-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:var(--space-4);display:flex;flex-direction:column;gap:var(--space-3)}
+.status-row{display:flex;align-items:center;gap:var(--space-3);font-size:var(--text-xs)}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--text-faint);transition:background var(--transition)}
+.sdot.ok{background:var(--green)}
+.sdot.fail{background:var(--red)}
+.sdot.spin{background:var(--yellow);animation:pulse 1s ease-in-out infinite}
+.slabel{color:var(--text-muted);flex:1}
+.sval{color:var(--text);font-weight:600}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.alert{padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);font-size:var(--text-xs);line-height:1.6}
+.alert.warn{background:rgba(236,201,75,0.1);border:1px solid rgba(236,201,75,0.3);color:var(--yellow)}
+.alert.err{background:rgba(245,101,101,0.1);border:1px solid rgba(245,101,101,0.3);color:var(--red)}
+.alert.ok{background:rgba(72,187,120,0.1);border:1px solid rgba(72,187,120,0.3);color:var(--green)}
+
+.btn-primary{padding:var(--space-3) var(--space-5);background:var(--accent);color:white;border-radius:var(--radius-md);font-weight:600;font-size:var(--text-sm);display:flex;align-items:center;justify-content:center;gap:var(--space-2);transition:all var(--transition);width:100%}
 .btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow)}
 .btn-primary:active{transform:translateY(0)}
 .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-danger{padding:var(--space-2) var(--space-4);background:rgba(245,101,101,0.12);color:var(--red);border:1px solid rgba(245,101,101,0.25);border-radius:var(--radius-md);font-weight:600;font-size:var(--text-sm);display:flex;align-items:center;justify-content:center;gap:var(--space-2);transition:all var(--transition)}
 .btn-danger:hover{background:rgba(245,101,101,0.2)}
-
-.sender-ui,.receiver-ui{display:flex;flex-direction:column;height:calc(100dvh - 65px)}
-.sender-toolbar,.receiver-toolbar{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-5);background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
-.receiver-toolbar{border-bottom:none;border-top:1px solid var(--border);justify-content:space-between}
-.toolbar-divider{width:1px;height:24px;background:var(--border);margin:0 var(--space-1)}
-.sender-preview,.receiver-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#000;position:relative;overflow:hidden}
-.sender-preview video,.receiver-canvas-wrap video{max-width:100%;max-height:100%;object-fit:contain}
-.badge-row{display:flex;align-items:center;gap:var(--space-2)}
-.badge{display:flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:600;border:1px solid var(--border);background:var(--surface)}
-.badge .dot{width:7px;height:7px;border-radius:50%;background:var(--text-faint)}
-.badge.live .dot{background:var(--red);animation:pulse 1.2s ease-in-out infinite;box-shadow:0 0 6px var(--red)}
-.badge.connected .dot{background:var(--green)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-
-.stat-pills{display:flex;gap:var(--space-2);flex-wrap:wrap}
-.pill{padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);background:var(--surface-2);border:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted);font-variant-numeric:tabular-nums}
-.pill span{color:var(--text);font-weight:600}
-
-.center-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-4);text-align:center;color:var(--text-muted);padding:var(--space-8);background:rgba(0,0,0,0.6)}
-.center-state h3{color:var(--text);font-weight:700}
-.center-state p{font-size:var(--text-sm);max-width:42ch}
-.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-
 .back-btn{font-size:var(--text-xs);color:var(--text-muted);display:flex;align-items:center;gap:var(--space-1);transition:color var(--transition)}
 .back-btn:hover{color:var(--text)}
 
+.sender-ui,.receiver-ui{display:flex;flex-direction:column;height:calc(100dvh - 65px)}
+.toolbar{display:flex;align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-5);background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap}
+.tdivider{width:1px;height:24px;background:var(--border)}
+.tinline{display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-xs);color:var(--text-muted)}
+.tinline input[type=range]{width:80px;accent-color:var(--accent)}
+.tinline select{padding:var(--space-1) var(--space-2);background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font:inherit;font-size:var(--text-xs)}
+.preview{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
+.preview canvas{max-width:100%;max-height:100%;border-radius:var(--radius-md)}
+.badge{display:flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:600;border:1px solid var(--border);background:var(--surface)}
+.badge .dot{width:7px;height:7px;border-radius:50%}
+.badge.live .dot{background:var(--red);animation:pulse 1.2s ease-in-out infinite}
+.badge.conn .dot{background:var(--green)}
+.logstrip{padding:var(--space-2) var(--space-5);background:var(--surface);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-faint);font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:28px}
+
+.rx-canvas-wrap{flex:1;display:flex;align-items:center;justify-content:center;background:#000;position:relative;overflow:hidden}
+.rx-canvas-wrap canvas{max-width:100%;max-height:100%}
+.rx-toolbar{display:flex;align-items:center;justify-content:space-between;padding:var(--space-3) var(--space-5);background:var(--surface);border-top:1px solid var(--border);flex-wrap:wrap;gap:var(--space-3)}
+.pills{display:flex;gap:var(--space-2);flex-wrap:wrap}
+.pill{padding:var(--space-1) var(--space-3);border-radius:var(--radius-full);background:var(--surface-2);border:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted);font-variant-numeric:tabular-nums}
+.pill span{color:var(--text);font-weight:600}
+.empty-state{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-4);color:var(--text-muted);text-align:center;padding:var(--space-8)}
+.empty-state h3{color:var(--text);font-weight:700}
+.empty-state p{font-size:var(--text-sm);max-width:30ch}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.key-banner{background:rgba(236,201,75,0.08);border:1px solid rgba(236,201,75,0.2);border-radius:var(--radius-lg);padding:var(--space-4);font-size:var(--text-xs);color:var(--yellow);line-height:1.6}
+.key-banner strong{display:block;margin-bottom:var(--space-1);font-size:var(--text-sm)}
+.key-input-row{display:flex;gap:var(--space-2);margin-top:var(--space-3)}
+.key-field{flex:1;padding:var(--space-2) var(--space-3);background:var(--surface);border:1px solid rgba(236,201,75,0.3);border-radius:var(--radius-md);color:var(--text);font:inherit;font-size:var(--text-xs)}
+.key-field:focus{outline:none;border-color:var(--yellow)}
+.key-save-btn{padding:var(--space-2) var(--space-4);background:rgba(236,201,75,0.15);color:var(--yellow);border:1px solid rgba(236,201,75,0.3);border-radius:var(--radius-md);font-size:var(--text-xs);font-weight:600;transition:all var(--transition)}
+.key-save-btn:hover{background:rgba(236,201,75,0.25)}
+.key-banner label{display:flex;align-items:center;gap:var(--space-2);margin-top:var(--space-2);cursor:pointer}
+
 .hidden{display:none!important}
-
-.log-strip{padding:var(--space-2) var(--space-5);background:var(--surface);border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-faint);font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.error-box{padding:var(--space-3);background:rgba(245,101,101,0.1);border:1px solid rgba(245,101,101,0.3);border-radius:var(--radius-md);color:var(--red);font-size:var(--text-xs);line-height:1.5}
-.error-box strong{display:block;margin-bottom:var(--space-1);font-size:var(--text-sm)}
-
-@media(max-width:480px){.mode-cards{grid-template-columns:1fr}.sender-toolbar{gap:var(--space-2)}}
+@media(max-width:480px){.mode-cards{grid-template-columns:1fr}}
 :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:var(--radius-sm)}
 </style>
 </head>
 <body>
-
 <header>
   <div class="logo">
-    <svg width="26" height="26" viewBox="0 0 28 28" fill="none" aria-label="ScreenBridge">
+    <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
       <rect x="2" y="5" width="24" height="16" rx="3" stroke="currentColor" stroke-width="2"/>
       <path d="M10 21v2M18 21v2M7 23h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       <circle cx="20" cy="9" r="3" fill="currentColor" opacity="0.9"/>
     </svg>
     ScreenBridge Live
   </div>
-  <div class="header-right">
-    <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-    </button>
-  </div>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+  </button>
 </header>
 
-<!-- Mode picker -->
-<div id="screenMode">
-  <div class="mode-screen">
+<!-- MODE PICKER -->
+<div id="sMode" class="screen">
+  <div class="center-wrap" style="align-items:center;text-align:center">
     <div>
       <h1>ScreenBridge Live</h1>
-      <p style="margin-top:var(--space-2)">Stream your screen to any device in real time. No install needed.</p>
+      <p class="sub" style="margin-top:var(--space-2)">Stream your screen to any device. Works across different networks via HTTPS relay — no install needed.</p>
     </div>
-    <div class="mode-cards">
-      <div class="mode-card sender" id="btnSenderMode">
-        <div class="icon">
+    <div class="mode-cards" style="width:100%">
+      <div class="mode-card" id="btnSender">
+        <div class="mode-icon" style="background:rgba(79,142,247,0.15);color:var(--accent)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
         </div>
         <h3>Share Screen</h3>
         <p>Open on the computer you want to broadcast</p>
       </div>
-      <div class="mode-card receiver" id="btnReceiverMode">
-        <div class="icon" style="background:rgba(72,187,120,0.15);color:var(--green)">
+      <div class="mode-card" id="btnReceiver">
+        <div class="mode-icon" style="background:rgba(72,187,120,0.15);color:var(--green)">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg>
         </div>
         <h3>View Screen</h3>
         <p>Open on your phone or tablet to watch</p>
       </div>
     </div>
+    <div class="key-banner" style="width:100%;text-align:left">
+      <strong>⚡ Ably API Key Required</strong>
+      Paste your Ably <em>Root API Key</em> below (from ably.com → your app → API Keys). Both the sender device AND the viewer device need the same key entered.
+      <div class="key-input-row">
+        <input class="key-field" id="ablyKeyInput" placeholder="xxxx.yyyy:zzzzzzzzzzzz" autocomplete="off" spellcheck="false">
+        <button class="key-save-btn" id="saveKeyBtn">Save</button>
+      </div>
+      <label><input type="checkbox" id="rememberKey"> Remember on this device (stored in browser localStorage)</label>
+      <div id="keyStatus" style="margin-top:var(--space-2);font-size:var(--text-xs)"></div>
+    </div>
   </div>
 </div>
 
-<!-- Sender setup -->
-<div id="screenSenderSetup" class="hidden">
-  <div class="room-screen">
-    <button class="back-btn" id="backFromSender">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
+<!-- SENDER SETUP -->
+<div id="sSenderSetup" class="screen hidden">
+  <div class="center-wrap">
+    <button class="back-btn" id="backSender">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back
     </button>
     <h2>Share your screen</h2>
-    <p>1. Click <strong>Start Sharing</strong> below and pick the screen/window/tab.<br>2. Open this site on your phone, tap <strong>View Screen</strong>, and enter the code.</p>
-    <div class="code-display">
-      <div class="code-value" id="senderCode">——</div>
-      <button class="copy-btn" id="copyCodeBtn">Copy</button>
+    <p class="sub">Give this code to the person viewing on their phone.</p>
+    <div class="code-box">
+      <div class="code-val" id="txCode">——</div>
+      <button class="copy-btn" id="copyBtn">Copy</button>
     </div>
-    <div id="senderConnStatus" style="font-size:var(--text-xs);color:var(--text-muted);display:flex;align-items:center;gap:var(--space-2)">
-      <div class="spinner" style="width:14px;height:14px;border-width:2px"></div>
-      <span id="senderConnText">Connecting to signaling server…</span>
+    <div class="status-panel">
+      <div class="status-row"><div class="sdot spin" id="txDotAbly"></div><div class="slabel">Ably connection</div><div class="sval" id="txLblAbly">Connecting…</div></div>
+      <div class="status-row"><div class="sdot" id="txDotViewer"></div><div class="slabel">Viewer connected</div><div class="sval" id="txLblViewer">Waiting…</div></div>
     </div>
-    <button class="btn-primary" id="startSharingBtn" disabled>
+    <div id="txAlert" class="hidden"></div>
+    <button class="btn-primary hidden" id="startBtn">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/></svg>
       Start Sharing
     </button>
-    <div class="error-box hidden" id="senderError"></div>
   </div>
 </div>
 
-<!-- Receiver setup -->
-<div id="screenReceiverSetup" class="hidden">
-  <div class="room-screen">
-    <button class="back-btn" id="backFromReceiver">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-      Back
+<!-- RECEIVER SETUP -->
+<div id="sReceiverSetup" class="screen hidden">
+  <div class="center-wrap">
+    <button class="back-btn" id="backReceiver">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>Back
     </button>
     <h2>View a screen</h2>
-    <p>Enter the 6-digit room code from the sender.</p>
+    <p class="sub">Enter the 6-digit code shown on the computer.</p>
     <div class="input-row">
-      <input class="code-input" id="joinCodeInput" maxlength="6" placeholder="Enter code…" autocomplete="off" inputmode="numeric">
-      <button class="btn-primary" id="joinRoomBtn">Connect</button>
+      <input class="code-input" id="rxCodeInput" maxlength="6" placeholder="123456" inputmode="numeric" autocomplete="off">
+      <button class="btn-primary" id="joinBtn" style="width:auto;flex-shrink:0">Connect</button>
     </div>
-    <div class="error-box hidden" id="joinError"></div>
+    <div class="status-panel hidden" id="rxStatusPanel">
+      <div class="status-row"><div class="sdot spin" id="rxDotAbly"></div><div class="slabel">Ably connection</div><div class="sval" id="rxLblAbly">Connecting…</div></div>
+      <div class="status-row"><div class="sdot spin" id="rxDotCh"></div><div class="slabel">Joining channel</div><div class="sval" id="rxLblCh">Waiting…</div></div>
+    </div>
+    <div id="rxAlert" class="hidden"></div>
   </div>
 </div>
 
-<!-- Sender active -->
-<div id="screenSender" class="hidden">
+<!-- SENDER ACTIVE -->
+<div id="sSender" class="screen hidden">
   <div class="sender-ui">
-    <div class="sender-toolbar">
-      <div class="badge-row">
-        <div class="badge live"><div class="dot"></div> LIVE</div>
-        <div class="badge connected" id="connBadge" style="display:none"><div class="dot"></div> <span id="connCount">0</span> viewer</div>
+    <div class="toolbar">
+      <div style="display:flex;gap:var(--space-2)">
+        <div class="badge live"><div class="dot"></div>LIVE</div>
+        <div class="badge conn hidden" id="viewerBadge"><div class="dot"></div><span>1 viewer</span></div>
       </div>
-      <div class="toolbar-divider"></div>
-      <div style="font-size:var(--text-xs);color:var(--text-muted)">Code: <strong style="color:var(--accent);letter-spacing:0.1em" id="senderCodeMini">——</strong></div>
-      <div style="margin-left:auto"></div>
-      <button class="btn-danger" id="stopSenderBtn">Stop</button>
+      <div class="tdivider"></div>
+      <div class="tinline">FPS <input type="range" id="fpsR" min="1" max="15" value="6"> <strong id="fpsV">6</strong></div>
+      <div class="tinline">Quality <input type="range" id="qualR" min="10" max="90" value="55"> <strong id="qualV">55%</strong></div>
+      <div class="tinline">Scale
+        <select id="scaleS">
+          <option value="1">100%</option>
+          <option value="0.75">75%</option>
+          <option value="0.5" selected>50%</option>
+          <option value="0.35">35%</option>
+          <option value="0.25">25%</option>
+        </select>
+      </div>
+      <div class="tdivider"></div>
+      <button class="btn-danger" id="stopTx" style="padding:var(--space-1) var(--space-3)">Stop</button>
     </div>
-    <div class="sender-preview">
-      <video id="senderVideo" muted playsinline autoplay></video>
-    </div>
-    <div class="log-strip" id="senderLog">Ready</div>
+    <div class="preview"><canvas id="txCanvas"></canvas></div>
+    <div class="logstrip" id="txLog">Starting…</div>
   </div>
 </div>
 
-<!-- Receiver active -->
-<div id="screenReceiver" class="hidden">
+<!-- RECEIVER ACTIVE -->
+<div id="sReceiver" class="screen hidden">
   <div class="receiver-ui">
-    <div class="receiver-canvas-wrap">
-      <video id="receiverVideo" playsinline autoplay></video>
-      <div class="center-state" id="receiverEmptyState">
+    <div class="rx-canvas-wrap">
+      <canvas id="rxCanvas"></canvas>
+      <div class="empty-state" id="rxEmpty">
         <div class="spinner"></div>
-        <h3 id="receiverStateTitle">Connecting…</h3>
-        <p id="receiverStateMsg">Establishing peer connection</p>
+        <h3>Waiting for stream…</h3>
+        <p>Sender needs to click Start Sharing</p>
       </div>
     </div>
-    <div class="receiver-toolbar">
-      <div class="stat-pills">
-        <div class="pill">Status <span id="rxStatus">connecting</span></div>
-        <div class="pill">Res <span id="rxRes">—</span></div>
+    <div class="rx-toolbar">
+      <div class="pills">
+        <div class="pill">FPS <span id="rxFpsV">—</span></div>
+        <div class="pill">Size <span id="rxSizeV">—</span></div>
+        <div class="pill">Res <span id="rxResV">—</span></div>
+        <div class="pill">Frames <span id="rxFrV">—</span></div>
       </div>
-      <button class="btn-danger" id="stopReceiverBtn">Disconnect</button>
+      <button class="btn-danger" id="stopRx" style="padding:var(--space-1) var(--space-3)">Disconnect</button>
     </div>
   </div>
 </div>
 
 <script>
-// ─── Theme ───────────────────────────────────────────────────────────────────
+// ── Theme ────────────────────────────────────────────────────────────────────
 (function(){
-  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;
-  let d='dark';
-  t&&t.addEventListener('click',()=>{
+  const t=document.querySelector('[data-theme-toggle]'),r=document.documentElement;let d='dark';
+  t.addEventListener('click',()=>{
     d=d==='dark'?'light':'dark';
     r.setAttribute('data-theme',d);
   });
 })();
 
-// ─── Screen switcher ─────────────────────────────────────────────────────────
-const screens={
-  mode:document.getElementById('screenMode'),
-  senderSetup:document.getElementById('screenSenderSetup'),
-  receiverSetup:document.getElementById('screenReceiverSetup'),
-  sender:document.getElementById('screenSender'),
-  receiver:document.getElementById('screenReceiver'),
-};
-function show(name){Object.values(screens).forEach(s=>s.classList.add('hidden'));screens[name].classList.remove('hidden');}
+// ── Screen manager ───────────────────────────────────────────────────────────
+const SCREENS=['sMode','sSenderSetup','sReceiverSetup','sSender','sReceiver'];
+function show(id){SCREENS.forEach(s=>document.getElementById(s).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');}
 
-// ─── PeerJS config with TURN (OpenRelay free TURN) ──────────────────────────
-const PEER_CONFIG = {
-  debug: 1,
-  config: {
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' },
-      { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-      { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-      { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-    ]
-  }
-};
+// ── Ably key management ──────────────────────────────────────────────────────
+let ABLY_KEY='';
+const keyInput=document.getElementById('ablyKeyInput');
+const keyStatus=document.getElementById('keyStatus');
+const rememberCheck=document.getElementById('rememberKey');
 
-let peer=null, conn=null, mediaStream=null, activeCall=null;
-let mode='', roomCode='';
+// Load saved key
+try{
+  const saved=localStorage.getItem('sb_ably_key');
+  if(saved){ABLY_KEY=saved;keyStatus.style.color='var(--green)';keyStatus.textContent='✓ Key loaded from this device.';rememberCheck.checked=true;}
+}catch(e){}
 
-function generateCode(){return Math.floor(100000+Math.random()*900000).toString();}
+document.getElementById('saveKeyBtn').addEventListener('click',()=>{
+  const v=keyInput.value.trim();
+  if(!looksLikeAblyKey(v)){keyStatus.style.color='var(--red)';keyStatus.textContent='Invalid key format. Should look like: xxxx.yyyy:zzzz';return;}
+  ABLY_KEY=v;
+  if(rememberCheck.checked){try{localStorage.setItem('sb_ably_key',v);}catch(e){}}
+  else{try{localStorage.removeItem('sb_ably_key');}catch(e){}}
+  keyStatus.style.color='var(--green)';
+  keyStatus.textContent='✓ Key saved'+(rememberCheck.checked?' to this device.':' for this session.');
+  keyInput.value='';
+});
 
-function loadPeerJS(cb){
-  if(window.Peer){cb();return;}
+function looksLikeAblyKey(v){return /^[^.:\s]+\.[^:\s]+:.+$/.test((v||'').trim());}
+
+function requireKey(){
+  if(!ABLY_KEY){alert('Please enter your Ably API key on this device first.');return false;}
+  if(!looksLikeAblyKey(ABLY_KEY)){alert('Your Ably key format looks invalid. Expected something like: xxxx.yyyy:zzzz');return false;}
+  return true;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function genCode(){return Math.floor(100000+Math.random()*900000).toString();}
+function dot(id,state){const e=document.getElementById(id);if(!e)return;e.className='sdot';if(state==='ok')e.classList.add('ok');else if(state==='fail')e.classList.add('fail');else if(state==='spin')e.classList.add('spin');}
+function lbl(id,t){const e=document.getElementById(id);if(e)e.textContent=t;}
+function alert2(id,msg,type){const e=document.getElementById(id);e.className='alert '+type;e.textContent=msg;e.classList.remove('hidden');}
+
+// ── Load Ably SDK ────────────────────────────────────────────────────────────
+function loadAbly(cb){
+  if(window.Ably){cb();return;}
   const s=document.createElement('script');
-  s.src='https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js';
-  s.onload=cb;
-  s.onerror=()=>showError('senderError','Failed to load PeerJS library. Check your network connection or try a different browser.');
+  s.src='https://cdn.ably.com/lib/ably.min-2.js';
+  s.onload=()=>{if(!window.Ably){alert('Ably SDK loaded but window.Ably was unavailable.');return;}cb();};
+  s.onerror=()=>{
+    const s2=document.createElement('script');
+    s2.src='https://cdn.jsdelivr.net/npm/ably@2/ably.min.js';
+    s2.onload=()=>{if(!window.Ably){alert('Ably fallback SDK loaded but window.Ably was unavailable.');return;}cb();};
+    s2.onerror=()=>alert('Could not load Ably SDK. Check internet, content blockers, or captive portal.');
+    document.head.appendChild(s2);
+  };
   document.head.appendChild(s);
 }
 
-function showError(elId, msg, title){
-  const el=document.getElementById(elId);
-  el.classList.remove('hidden');
-  el.innerHTML=(title?`<strong>${title}</strong>`:'')+msg;
+function formatAblyError(e){
+  if(!e)return 'Unknown connection error.';
+  const parts=[];
+  if(e.code)parts.push('Code '+e.code);
+  if(e.statusCode)parts.push('HTTP '+e.statusCode);
+  if(e.message)parts.push(e.message);
+  return parts.join(' — ') || String(e);
 }
-function hideError(elId){document.getElementById(elId).classList.add('hidden');}
 
-// ─── Mode selection ─────────────────────────────────────────────────────────
-document.getElementById('btnSenderMode').addEventListener('click',()=>{
-  mode='sender';
-  roomCode=generateCode();
-  document.getElementById('senderCode').textContent=roomCode;
-  document.getElementById('senderCodeMini').textContent=roomCode;
-  show('senderSetup');
-  loadPeerJS(initSenderPeer);
+// ── State ────────────────────────────────────────────────────────────────────
+let ablyClient=null,txCtrlChannel=null,txFrameChannel=null,rxCtrlChannel=null,rxFrameChannel=null;
+let mediaStream=null,captureRaf=null;
+let roomCode='';
+
+// ── Mode buttons ─────────────────────────────────────────────────────────────
+document.getElementById('btnSender').addEventListener('click',()=>{
+  if(!requireKey())return;
+  roomCode=genCode();
+  document.getElementById('txCode').textContent=roomCode;
+  document.getElementById('txAlert').classList.add('hidden');
+  document.getElementById('startBtn').classList.add('hidden');
+  show('sSenderSetup');
+  loadAbly(initSender);
 });
 
-document.getElementById('btnReceiverMode').addEventListener('click',()=>{
-  mode='receiver';
-  show('receiverSetup');
+document.getElementById('btnReceiver').addEventListener('click',()=>{
+  if(!requireKey())return;
+  show('sReceiverSetup');
 });
 
-document.getElementById('backFromSender').addEventListener('click',()=>{cleanup();show('mode');});
-document.getElementById('backFromReceiver').addEventListener('click',()=>{cleanup();show('mode');});
+document.getElementById('backSender').addEventListener('click',()=>{cleanup();show('sMode');});
+document.getElementById('backReceiver').addEventListener('click',()=>{cleanup();show('sMode');});
 
-document.getElementById('copyCodeBtn').addEventListener('click',()=>{
+document.getElementById('copyBtn').addEventListener('click',()=>{
   navigator.clipboard.writeText(roomCode).then(()=>{
-    const btn=document.getElementById('copyCodeBtn');
-    btn.textContent='Copied!';
-    setTimeout(()=>btn.textContent='Copy',2000);
+    const b=document.getElementById('copyBtn');
+    b.textContent='Copied!';
+    setTimeout(()=>b.textContent='Copy',2000);
   });
 });
 
-// ─── Sender ─────────────────────────────────────────────────────────────────
-function initSenderPeer(){
-  hideError('senderError');
-  document.getElementById('senderConnText').textContent='Connecting to signaling server…';
-  peer=new Peer('sb-'+roomCode, PEER_CONFIG);
+// ── SENDER ───────────────────────────────────────────────────────────────────
+function initSender(){
+  dot('txDotAbly','spin'); lbl('txLblAbly','Connecting…');
+  dot('txDotViewer',''); lbl('txLblViewer','Waiting…');
 
-  peer.on('open',(id)=>{
-    senderLog('Signaling ready. ID: '+id);
-    document.getElementById('senderConnStatus').innerHTML='<span style="color:var(--green)">●</span> Ready — waiting for viewer';
-    document.getElementById('startSharingBtn').disabled=false;
-  });
+  ablyClient=new Ably.Realtime({key:ABLY_KEY,closeOnUnload:true});
 
-  peer.on('connection', c => {
-    // Data channel for keep-alive / metadata (optional)
-    conn = c;
-    c.on('open',()=>senderLog('Viewer data channel open'));
-  });
-
-  peer.on('call', call => {
-    senderLog('Incoming call from viewer');
-    if(!mediaStream){
-      senderLog('No media stream yet — viewer connected before sharing started');
-      call.close();
-      return;
-    }
-    call.answer(mediaStream);
-    activeCall = call;
-    document.getElementById('connBadge').style.display='flex';
-    document.getElementById('connCount').textContent='1';
-
-    call.on('close',()=>{
-      senderLog('Viewer disconnected');
-      document.getElementById('connBadge').style.display='none';
+  ablyClient.connection.on('connected',()=>{
+    dot('txDotAbly','ok'); lbl('txLblAbly','Connected ✓');
+    txCtrlChannel=ablyClient.channels.get('sb-ctrl-'+roomCode);
+    txCtrlChannel.subscribe('viewer-joined',()=>{
+      dot('txDotViewer','ok'); lbl('txLblViewer','Connected ✓');
+      document.getElementById('startBtn').classList.remove('hidden');
+      alert2('txAlert','Viewer connected! Click Start Sharing.','ok');
+      // ack so viewer knows sender is live
+      txCtrlChannel.publish('sender-here',{});
     });
-    call.on('error',e=>senderLog('Call error: '+e));
+    txCtrlChannel.subscribe('viewer-left',()=>{
+      dot('txDotViewer',''); lbl('txLblViewer','Disconnected');
+      document.getElementById('viewerBadge').classList.add('hidden');
+    });
   });
 
-  peer.on('error', e => {
-    console.error('Peer error:', e);
-    let msg='';
-    switch(e.type){
-      case 'unavailable-id':
-        senderLog('Code taken, regenerating…');
-        peer.destroy();
-        roomCode=generateCode();
-        document.getElementById('senderCode').textContent=roomCode;
-        document.getElementById('senderCodeMini').textContent=roomCode;
-        setTimeout(initSenderPeer,500);
-        return;
-      case 'network':
-        msg='Lost connection to signaling server. Check your internet. If you are on a corporate/VPN network (Zscaler, etc.), it may be blocking WebRTC.';
-        break;
-      case 'server-error':
-        msg='PeerJS public server is unreachable. The free service may be down. Try again in a minute.';
-        break;
-      case 'browser-incompatible':
-        msg='Your browser does not support WebRTC. Use Chrome, Edge, Firefox, or Safari.';
-        break;
-      case 'ssl-unavailable':
-        msg='SSL not available. Make sure you are loading the page over HTTPS.';
-        break;
-      default:
-        msg='Error: '+(e.type||e.message||e);
-    }
-    showError('senderError', msg, 'Connection problem');
-    senderLog('ERROR: '+e.type);
+  ablyClient.connection.on('failed',e=>{
+    dot('txDotAbly','fail'); lbl('txLblAbly','Failed');
+    alert2('txAlert','Could not connect to Ably. '+formatAblyError(e)+' — Check API key.','err');
+  });
+  ablyClient.connection.on('disconnected',e=>{
+    dot('txDotAbly','spin'); lbl('txLblAbly','Reconnecting…');
+    if(e) console.warn('Sender disconnected', e);
   });
 }
 
-document.getElementById('startSharingBtn').addEventListener('click',startSharing);
+document.getElementById('startBtn').addEventListener('click',startSharing);
 
 async function startSharing(){
-  hideError('senderError');
   try{
-    mediaStream = await navigator.mediaDevices.getDisplayMedia({
-      video:{ frameRate:{ ideal:30, max:60 } },
-      audio:false
-    });
-    mediaStream.getVideoTracks()[0].addEventListener('ended', stopSender);
-    show('sender');
-    const v=document.getElementById('senderVideo');
-    v.srcObject=mediaStream;
-    senderLog('Sharing screen — code: '+roomCode);
+    mediaStream=await navigator.mediaDevices.getDisplayMedia({video:{frameRate:{ideal:15,max:20}},audio:false});
+    mediaStream.getVideoTracks()[0].addEventListener('ended',stopSender);
+    show('sSender');
+    document.getElementById('viewerBadge').classList.remove('hidden');
+    const video=document.createElement('video');
+    video.muted=true;video.playsInline=true;video.srcObject=mediaStream;
+    await video.play();
+    txFrameChannel=ablyClient.channels.get('sb-frames-'+roomCode);
+    runFrameLoop(video,txFrameChannel);
+    txLog('Streaming…');
   }catch(e){
-    if(e.name==='NotAllowedError'){
-      senderLog('User cancelled screen pick');
-    } else {
-      showError('senderError', 'Could not capture screen: '+e.message, 'Capture failed');
-    }
+    if(e.name!=='NotAllowedError') alert2('txAlert','Screen capture failed: '+e.message,'err');
   }
 }
+
+function runFrameLoop(video,frameCh){
+  const canvas=document.getElementById('txCanvas');
+  const ctx=canvas.getContext('2d');
+  let last=0,sent=0,frameId=0;
+  function loop(ts){
+    if(!mediaStream||!mediaStream.active)return;
+    captureRaf=requestAnimationFrame(loop);
+    const fps=parseInt(document.getElementById('fpsR').value);
+    if(ts-last<1000/fps)return;
+    last=ts;
+    const sc=parseFloat(document.getElementById('scaleS').value);
+    const w=Math.round(video.videoWidth*sc),h=Math.round(video.videoHeight*sc);
+    if(!w||!h)return;
+    canvas.width=w;canvas.height=h;
+    ctx.drawImage(video,0,0,w,h);
+    const q=parseInt(document.getElementById('qualR').value)/100;
+    const dataUrl=canvas.toDataURL('image/jpeg',q);
+    const CHUNK=48000;
+    const total=Math.ceil(dataUrl.length/CHUNK);
+    const fid=frameId++;
+    for(let i=0;i<total;i++){
+      frameCh.publish('frame',{fid,i,total,data:dataUrl.slice(i*CHUNK,(i+1)*CHUNK),w,h});
+    }
+    sent++;
+    if(sent%20===0)txLog(`Sent ${sent} frames | ${(dataUrl.length/1024).toFixed(0)} KB/frame`);
+  }
+  captureRaf=requestAnimationFrame(loop);
+}
+
+document.getElementById('fpsR').addEventListener('input',e=>document.getElementById('fpsV').textContent=e.target.value);
+document.getElementById('qualR').addEventListener('input',e=>document.getElementById('qualV').textContent=e.target.value+'%');
 
 function stopSender(){
-  if(activeCall){try{activeCall.close();}catch(e){}activeCall=null;}
+  if(captureRaf){cancelAnimationFrame(captureRaf);captureRaf=null;}
   if(mediaStream){mediaStream.getTracks().forEach(t=>t.stop());mediaStream=null;}
-  document.getElementById('senderVideo').srcObject=null;
-  show('senderSetup');
-  document.getElementById('connBadge').style.display='none';
+  if(txCtrlChannel)txCtrlChannel.publish('stream-ended',{});
+  show('sSenderSetup');
+  document.getElementById('startBtn').classList.add('hidden');
+  document.getElementById('viewerBadge').classList.add('hidden');
+  dot('txDotViewer','');lbl('txLblViewer','Waiting…');
+  alert2('txAlert','Sharing stopped.','warn');
 }
-document.getElementById('stopSenderBtn').addEventListener('click',stopSender);
+document.getElementById('stopTx').addEventListener('click',stopSender);
+function txLog(m){document.getElementById('txLog').textContent=m;}
 
-function senderLog(msg){
-  const el=document.getElementById('senderLog');
-  if(el) el.textContent='['+new Date().toLocaleTimeString()+'] '+msg;
-  console.log('[sender]', msg);
-}
+// ── RECEIVER ─────────────────────────────────────────────────────────────────
+document.getElementById('joinBtn').addEventListener('click',joinRoom);
+document.getElementById('rxCodeInput').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom();});
 
-// ─── Receiver ───────────────────────────────────────────────────────────────
-document.getElementById('joinRoomBtn').addEventListener('click',joinRoom);
-document.getElementById('joinCodeInput').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom();});
+let rxFrames=0,rxFpsC=0,rxFpsT=Date.now();
+let frameAssembly={}; // {fid: {parts:{}, total, w, h}}
 
 function joinRoom(){
-  const code=document.getElementById('joinCodeInput').value.trim().replace(/\D/g,'');
-  if(code.length!==6){
-    showError('joinError','Please enter a 6-digit code.','Invalid code');
-    return;
-  }
-  hideError('joinError');
-  loadPeerJS(()=>initReceiverPeer(code));
+  const code=document.getElementById('rxCodeInput').value.trim().replace(/\D/g,'');
+  if(code.length!==6){alert2('rxAlert','Enter the full 6-digit code.','err');return;}
+  document.getElementById('rxAlert').classList.add('hidden');
+  document.getElementById('rxStatusPanel').classList.remove('hidden');
+  loadAbly(()=>initReceiver(code));
 }
 
-function initReceiverPeer(code){
-  show('receiver');
-  setRxState('Connecting…','Establishing peer connection');
-  document.getElementById('rxStatus').textContent='connecting';
+function initReceiver(code){
+  dot('rxDotAbly','spin');lbl('rxLblAbly','Connecting…');
+  dot('rxDotCh','spin');lbl('rxLblCh','Joining channel…');
 
-  peer=new Peer(PEER_CONFIG);
+  ablyClient=new Ably.Realtime({key:ABLY_KEY,closeOnUnload:true});
 
-  peer.on('open',()=>{
-    setRxState('Calling sender…','Code: '+code);
-    // Open data conn first (also triggers sender awareness)
-    conn = peer.connect('sb-'+code, { reliable:true });
-    conn.on('open', ()=>{
-      console.log('[recv] data channel open, initiating call');
-      // Now place media call. We must send our own (empty) stream so PeerJS allows it.
-      // Workaround: pass an empty audio-only MediaStream (some PeerJS versions require non-null).
-      const emptyStream = new MediaStream();
-      const call = peer.call('sb-'+code, emptyStream);
-      activeCall = call;
+  ablyClient.connection.on('connected',()=>{
+    dot('rxDotAbly','ok');lbl('rxLblAbly','Connected ✓');
+    rxCtrlChannel=ablyClient.channels.get('sb-ctrl-'+code);
+    rxCtrlChannel.subscribe('stream-ended',()=>{
+      const e=document.getElementById('rxEmpty');
+      e.classList.remove('hidden');
+      e.innerHTML='<h3 style="color:var(--text-muted)">Stream ended</h3><p>The sender stopped sharing.</p>';
+    });
 
-      if(!call){
-        setRxState('Call failed','Could not initiate media call');
-        return;
+    rxFrameChannel=ablyClient.channels.get('sb-frames-'+code);
+    rxFrameChannel.subscribe('frame',msg=>{
+      const {fid,i,total,data,w,h}=msg.data;
+      if(total===1){
+        renderFrame(data,w,h);
+      } else {
+        if(!frameAssembly[fid])frameAssembly[fid]={parts:{},total,w,h};
+        frameAssembly[fid].parts[i]=data;
+        if(Object.keys(frameAssembly[fid].parts).length===total){
+          let full='';
+          for(let k=0;k<total;k++)full+=frameAssembly[fid].parts[k];
+          renderFrame(full,w,h);
+          delete frameAssembly[fid];
+          // GC: drop any half-assembled frames older than the current one (stale)
+          const keys=Object.keys(frameAssembly).map(Number).sort((a,b)=>a-b);
+          for(const k of keys){if(k<fid-2)delete frameAssembly[k];}
+        }
       }
-
-      call.on('stream', remoteStream => {
-        console.log('[recv] got remote stream', remoteStream);
-        const v=document.getElementById('receiverVideo');
-        v.srcObject = remoteStream;
-        v.play().catch(err=>console.warn('autoplay blocked:',err));
-        document.getElementById('receiverEmptyState').classList.add('hidden');
-        document.getElementById('rxStatus').textContent='live';
-        v.addEventListener('loadedmetadata',()=>{
-          document.getElementById('rxRes').textContent=v.videoWidth+'×'+v.videoHeight;
-        });
-      });
-
-      call.on('close',()=>{
-        setRxState('Stream ended','The sender stopped sharing.');
-        document.getElementById('rxStatus').textContent='ended';
-      });
-      call.on('error',e=>{
-        console.error('call error:', e);
-        setRxState('Call error', String(e));
-      });
     });
 
-    conn.on('error', e => {
-      console.error('data conn error:', e);
+    dot('rxDotCh','ok');lbl('rxLblCh','Listening ✓');
+    show('sReceiver');
+    // Tell sender we're here
+    rxCtrlChannel.publish('viewer-joined',{}).catch(err=>{
+      console.warn('viewer-joined publish failed', err);
     });
   });
 
-  peer.on('error', e => {
-    console.error('Peer error:', e);
-    let msg='';
-    switch(e.type){
-      case 'peer-unavailable':
-        msg='No sender found with that code. Make sure: (1) the sender tab is still open, (2) the code is correct, (3) the sender clicked "Start Sharing".';
-        break;
-      case 'network':
-        msg='Lost connection to signaling server. Check internet/VPN.';
-        break;
-      case 'server-error':
-        msg='Signaling server unreachable. Try again in a minute.';
-        break;
-      case 'browser-incompatible':
-        msg='Browser does not support WebRTC.';
-        break;
-      default:
-        msg='Error: '+(e.type||e.message||e);
+  ablyClient.connection.on('failed',e=>{
+    dot('rxDotAbly','fail');lbl('rxLblAbly','Failed');
+    alert2('rxAlert','Could not connect to Ably. '+formatAblyError(e)+' — Check your API key.','err');
+  });
+  ablyClient.connection.on('disconnected',e=>{
+    dot('rxDotAbly','spin');lbl('rxLblAbly','Reconnecting…');
+    if(e) console.warn('Receiver disconnected', e);
+  });
+}
+
+function renderFrame(dataUrl,w,h){
+  document.getElementById('rxEmpty').classList.add('hidden');
+  const canvas=document.getElementById('rxCanvas');
+  const ctx=canvas.getContext('2d');
+  const img=new Image();
+  img.onload=()=>{
+    canvas.width=img.width;canvas.height=img.height;
+    ctx.drawImage(img,0,0);
+    rxFrames++;rxFpsC++;
+    document.getElementById('rxFrV').textContent=rxFrames.toLocaleString();
+    document.getElementById('rxResV').textContent=img.width+'×'+img.height;
+    document.getElementById('rxSizeV').textContent=Math.round(dataUrl.length*3/4/1024)+' KB';
+    const now=Date.now();
+    if(now-rxFpsT>=1000){
+      document.getElementById('rxFpsV').textContent=rxFpsC;
+      rxFpsC=0;rxFpsT=now;
     }
-    show('receiverSetup');
-    showError('joinError', msg, 'Could not connect');
-  });
+  };
+  img.src=dataUrl;
 }
 
-function setRxState(title,msg){
-  const el=document.getElementById('receiverEmptyState');
-  el.classList.remove('hidden');
-  document.getElementById('receiverStateTitle').textContent=title;
-  document.getElementById('receiverStateMsg').textContent=msg;
-}
+document.getElementById('stopRx').addEventListener('click',()=>{
+  if(rxCtrlChannel){try{rxCtrlChannel.publish('viewer-left',{});}catch(e){}}
+  cleanup();
+  show('sMode');
+});
 
-document.getElementById('stopReceiverBtn').addEventListener('click',()=>{cleanup();show('mode');});
-
-// ─── Cleanup ────────────────────────────────────────────────────────────────
+// ── Cleanup ──────────────────────────────────────────────────────────────────
 function cleanup(){
-  if(activeCall){try{activeCall.close();}catch(e){}activeCall=null;}
-  if(conn){try{conn.close();}catch(e){}conn=null;}
+  if(captureRaf){cancelAnimationFrame(captureRaf);captureRaf=null;}
   if(mediaStream){mediaStream.getTracks().forEach(t=>t.stop());mediaStream=null;}
-  if(peer){try{peer.destroy();}catch(e){}peer=null;}
-  const sv=document.getElementById('senderVideo'); if(sv) sv.srcObject=null;
-  const rv=document.getElementById('receiverVideo'); if(rv) rv.srcObject=null;
+  if(ablyClient){try{ablyClient.close();}catch(e){}}
+  ablyClient=null;
+  txCtrlChannel=txFrameChannel=rxCtrlChannel=rxFrameChannel=null;
+  frameAssembly={};
 }
 </script>
 </body>
