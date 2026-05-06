@@ -343,11 +343,23 @@ function loadAbly(cb){
 
 function formatAblyError(e){
   if(!e)return 'Unknown connection error.';
+  // Ably connection state change events wrap the actual error in `.reason`
+  const err = e.reason || e.error || e;
   const parts=[];
-  if(e.code)parts.push('Code '+e.code);
-  if(e.statusCode)parts.push('HTTP '+e.statusCode);
-  if(e.message)parts.push(e.message);
-  return parts.join(' — ') || String(e);
+  if(err.code)parts.push('Code '+err.code);
+  if(err.statusCode)parts.push('HTTP '+err.statusCode);
+  if(err.message)parts.push(err.message);
+  if(!parts.length){
+    try{return JSON.stringify(err);}catch(_){return String(err);}
+  }
+  return parts.join(' — ');
+}
+function validateAblyKey(k){
+  if(!k) return 'No API key set.';
+  if(!/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+:[A-Za-z0-9_\-+/=]+$/.test(k)){
+    return 'Key looks malformed. It should be in the form  appId.keyId:secret  (copy the full "Root" API key from Ably dashboard).';
+  }
+  return null;
 }
 
 // ── State ────────────────────────────────────────────────────────────────────
@@ -387,6 +399,13 @@ function initSender(){
   dot('txDotAbly','spin'); lbl('txLblAbly','Connecting…');
   dot('txDotViewer',''); lbl('txLblViewer','Waiting…');
 
+  const keyErr=validateAblyKey(ABLY_KEY);
+  if(keyErr){
+    dot('txDotAbly','fail'); lbl('txLblAbly','Bad key');
+    alert2('txAlert',keyErr,'err');
+    return;
+  }
+
   ablyClient=new Ably.Realtime({key:ABLY_KEY,closeOnUnload:true});
 
   ablyClient.connection.on('connected',()=>{
@@ -406,6 +425,7 @@ function initSender(){
   });
 
   ablyClient.connection.on('failed',e=>{
+    console.error('Ably connection failed (sender):', e);
     dot('txDotAbly','fail'); lbl('txLblAbly','Failed');
     alert2('txAlert','Could not connect to Ably. '+formatAblyError(e)+' — Check API key.','err');
   });
@@ -498,6 +518,13 @@ function initReceiver(code){
   dot('rxDotAbly','spin');lbl('rxLblAbly','Connecting…');
   dot('rxDotCh','spin');lbl('rxLblCh','Joining channel…');
 
+  const keyErr=validateAblyKey(ABLY_KEY);
+  if(keyErr){
+    dot('rxDotAbly','fail');lbl('rxLblAbly','Bad key');
+    alert2('rxAlert',keyErr,'err');
+    return;
+  }
+
   ablyClient=new Ably.Realtime({key:ABLY_KEY,closeOnUnload:true});
 
   ablyClient.connection.on('connected',()=>{
@@ -538,12 +565,18 @@ function initReceiver(code){
   });
 
   ablyClient.connection.on('failed',e=>{
+    console.error('Ably connection failed (receiver):', e);
     dot('rxDotAbly','fail');lbl('rxLblAbly','Failed');
     alert2('rxAlert','Could not connect to Ably. '+formatAblyError(e)+' — Check your API key.','err');
   });
   ablyClient.connection.on('disconnected',e=>{
     dot('rxDotAbly','spin');lbl('rxLblAbly','Reconnecting…');
     if(e) console.warn('Receiver disconnected', e);
+  });
+  ablyClient.connection.on('suspended',e=>{
+    console.warn('Receiver suspended', e);
+    dot('rxDotAbly','fail');lbl('rxLblAbly','Suspended');
+    alert2('rxAlert','Ably connection suspended. '+formatAblyError(e),'err');
   });
 }
 
