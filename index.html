@@ -168,9 +168,10 @@ h2{font-size:var(--text-lg);font-weight:700;letter-spacing:-0.02em}
     </div>
     <div class="key-banner" style="width:100%;text-align:left">
       <strong>⚡ Ably API Key Required</strong>
-      Paste your Ably <em>Root API Key</em> below (from ably.com → your app → API Keys). Both the sender device AND the viewer device need the same key entered.
+      Copy your Ably <em>Root API Key</em> from ably.com → your app → API Keys, then tap <strong>Paste &amp; Save</strong> below. Both devices need the same key.
       <div class="key-input-row">
         <input class="key-field" id="ablyKeyInput" placeholder="xxxx.yyyy:zzzzzzzzzzzz" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="none">
+        <button class="key-save-btn" id="pasteKeyBtn" title="Paste from clipboard">📋 Paste</button>
         <button class="key-save-btn" id="saveKeyBtn">Save</button>
       </div>
       <label><input type="checkbox" id="rememberKey"> Remember on this device (stored in browser localStorage)</label>
@@ -334,8 +335,33 @@ try{
   }catch(e){console.warn('hash autoload failed',e);}
 })();
 
+document.getElementById('pasteKeyBtn').addEventListener('click',async()=>{
+  try{
+    const text=await navigator.clipboard.readText();
+    const v=text.trim().replace(/[\u200B\uFEFF\u00A0]/g,''); // strip zero-width/invisible chars
+    keyInput.value=v;
+    if(!looksLikeAblyKey(v)){
+      keyStatus.style.color='var(--red)';
+      keyStatus.textContent='Pasted text does not look like an Ably key. Expected: xxxx.yyyy:zzzz';
+      return;
+    }
+    // Auto-save immediately on paste
+    ABLY_KEY=v;
+    rememberCheck.checked=true;
+    try{localStorage.setItem('sb_ably_key',v);}catch(e){}
+    keyStatus.style.color='var(--green)';
+    keyStatus.textContent='✓ Key pasted & saved to this device.';
+    keyInput.value='';
+  }catch(err){
+    // Clipboard permission denied — fall back to manual input
+    keyStatus.style.color='var(--yellow)';
+    keyStatus.textContent='Could not read clipboard (permission denied). Paste manually into the field then tap Save.';
+    keyInput.focus();
+  }
+});
+
 document.getElementById('saveKeyBtn').addEventListener('click',()=>{
-  const v=keyInput.value.trim();
+  const v=keyInput.value.trim().replace(/[\u200B\uFEFF\u00A0]/g,'');
   if(!looksLikeAblyKey(v)){keyStatus.style.color='var(--red)';keyStatus.textContent='Invalid key format. Should look like: xxxx.yyyy:zzzz';return;}
   ABLY_KEY=v;
   if(rememberCheck.checked){try{localStorage.setItem('sb_ably_key',v);}catch(e){}}
